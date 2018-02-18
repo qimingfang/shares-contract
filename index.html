@@ -1,0 +1,88 @@
+<html>
+  <head>
+    <title>Shares</title>
+    <script src="https://cdn.rawgit.com/ethereum/web3.js/develop/dist/web3.js"></script>
+    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js"></script>
+    <script>
+      var web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+      var abi = [
+        {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "addr",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "share",
+              "type": "uint256"
+            }
+          ],
+          "name": "Update",
+          "type": "event"
+        },
+        {
+          "constant": false,
+          "inputs": [
+            {
+              "name": "share",
+              "type": "uint256"
+            }
+          ],
+          "name": "updateShares",
+          "outputs": [],
+          "payable": false,
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "constant": true,
+          "inputs": [
+            {
+              "name": "addr",
+              "type": "address"
+            }
+          ],
+          "name": "getShares",
+          "outputs": [
+            {
+              "name": "",
+              "type": "uint256"
+            }
+          ],
+          "payable": false,
+          "stateMutability": "view",
+          "type": "function"
+        }
+      ]
+
+      var SharesContract = web3.eth.contract(abi);
+      var contractAddress = '0xa8cfeebf26c6a04483b047aeff7b9da99d9d31ff'
+      var instance = SharesContract.at(contractAddress);
+
+      // address in your geth
+      var buyerAddress = '0xcfd31d9ffb5bc1b1f4b7af99cd4792f2b11da185'
+
+      function getShares() {
+        instance.getShares(buyerAddress, function (err, res) {
+          $('#numShares').text(res.toString())
+        })
+      }
+
+      function buy() {
+        instance.updateShares(1, { from: buyerAddress }, function (err, res) {
+          console.log('txn', 'https://rinkeby.etherscan.io/tx/' + res)
+        })
+      }
+
+      getShares()
+    </script>
+  </head>
+
+  <body>
+    <p id="numShares"></p>
+    <button onclick='buy()'>Buy</button>
+  </body>
+</html>
